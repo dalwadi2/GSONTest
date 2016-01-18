@@ -1,8 +1,12 @@
-package com.example.gsontest;
+package com.example.gsontest.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +22,12 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.gsontest.CustomAdapter;
+import com.example.gsontest.MyApplication;
+import com.example.gsontest.MyRecyclerAdapter;
+import com.example.gsontest.R;
+import com.example.gsontest.RecyclerItemClickListener;
+import com.example.gsontest.newResopnse;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.loopj.android.http.AsyncHttpClient;
@@ -25,6 +35,9 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
 import com.squareup.picasso.Picasso;
+
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     Gson gson;
     AsyncHttpClient client;
     String newurl = "http://microblogging.wingnity.com/JSONParsingTutorial/jsonActors";
-
+    FloatingActionButton floatingActionButton;
     private RecyclerView mRecyclerView;
     private MyRecyclerAdapter adapter;
 
@@ -47,6 +60,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MyApplication.getInstance().trackScreenView("Home");
+        boolean my = isonline();
+        AppRate.with(this)
+                .setInstallDays(0) // default 10, 0 means install day.
+                .setLaunchTimes(3) // default 10
+                .setRemindInterval(2) // default 1
+                .setShowLaterButton(true) // default true
+                .setDebug(false) // default false
+                .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                    @Override
+                    public void onClickButton(int which) {
+                        Log.d(MainActivity.class.getName(), Integer.toString(which));
+                    }
+                })
+                .monitor();
+
+        // Show a dialog if meets conditions
+        AppRate.showRateDialogIfMeetsConditions(this);
+        Toast.makeText(getApplicationContext(),""+ my,Toast.LENGTH_LONG).show();
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.view);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,SecondActivity.class));
+            }
+        });
         Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
         Picasso.with(getApplicationContext()).setLoggingEnabled(true);
 //        setProgressBarIndeterminateVisibility(true);
@@ -81,8 +120,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 //Toast.makeText(getApplicationContext(), "Responce : " + error, Toast.LENGTH_LONG).show();
-                if (error instanceof TimeoutError || error instanceof NoConnectionError)
-                {
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                     Snackbar.with(getApplicationContext())
                             .type(SnackbarType.MULTI_LINE)
                             .text("Check Internet Connection")
@@ -149,5 +187,14 @@ public class MainActivity extends AppCompatActivity {
                 // ...
             }
         }));
+    }
+
+    protected Boolean isonline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo nf = cm.getActiveNetworkInfo();
+        if (nf != null && nf.isConnectedOrConnecting()) {
+            return true;
+        } else
+            return false;
     }
 }
