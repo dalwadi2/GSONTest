@@ -1,5 +1,7 @@
 package com.example.gsontest;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,14 +11,19 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.loopj.android.http.AsyncHttpClient;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,7 +80,24 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "Responce : " + error, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Responce : " + error, Toast.LENGTH_LONG).show();
+                if (error instanceof TimeoutError || error instanceof NoConnectionError)
+                {
+                    Snackbar.with(getApplicationContext())
+                            .type(SnackbarType.MULTI_LINE)
+                            .text("Check Internet Connection")
+                            .actionLabel("Done")
+                            .actionColor(Color.CYAN)
+                            .actionListener(new ActionClickListener() {
+                                @Override
+                                public void onActionClicked(Snackbar snackbar) {
+                                    startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                                }
+                            })
+                            .duration(Snackbar.SnackbarDuration.LENGTH_INDEFINITE)
+                            .swipeToDismiss(false)
+                            .show(MainActivity.this);
+                }
             }
         });
         queue.add(request);
