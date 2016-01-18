@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_id": "vaksys-1180",
+    "project_number": "181793795183",
+    "name": "VAKSYS"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:181793795183:android:4f4a5d62c0a2cbe0",
+        "client_id": "android:com.example.gsontest",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.example.gsontest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-72571351-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
